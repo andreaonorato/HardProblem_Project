@@ -7,7 +7,7 @@ def generate_combinations(sub_string, substitutions, current_combination, valid_
             for substitution in substitutions[char]:
                 generate_combinations(rest, substitutions, current_combination + [substitution], valid_combinations)   # recursive function to find the different substring
         else: 
-            generate_combinations(rest, substitutions, current_combination + [char], valid_combinations) 
+            generate_combinations(rest, substitutions, current_combination + [char], valid_combinations) # case where we have lower-case letter in our testLine
 
 def character_positions(input_string):  # function explained where we call it
     char_positions = {}
@@ -42,10 +42,10 @@ for line in file:
     dict[line[0]] =values
 
 
-print("This is myString: ", myString)
-print("This is our testLines: ", testLines)
+print("\nThis is myString: ", myString)
+print("\nThese are our testLines: ", testLines)
 
-print("The dict has the following values: ")
+print("\nThe dict has the following values: ")
 for key in dict:
     print(key , "  " , dict[key])
 
@@ -78,14 +78,14 @@ for secondString in testLines:
 
         else:
             pass  # in this case our string does not contain duplicate letters
+
+    if len(valid_combinations_duplicate_case)>0: # --> if our testLine contains duplicate letters:
+        valid_combinations = valid_combinations_duplicate_case
     
-    if len(valid_combinations_duplicate_case)==0:   # --> if our string does not contain duplicate letters:
-        valid_combinations_duplicate_case = valid_combinations
+    print("\nFor the testLine "+ secondString + " the valid combinations are: ")
+    print(valid_combinations)
     
-    #print("For the testLine "+ secondString + " the valid combinations are: ")
-    #print(valid_combinations_duplicate_case)
-    
-    result_dict[secondString] = valid_combinations_duplicate_case
+    result_dict[secondString] = valid_combinations
 
 # Finally, we check for common sets:
-print(result_dict)
+#print(result_dict)

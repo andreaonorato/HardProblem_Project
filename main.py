@@ -6,6 +6,8 @@ def generate_combinations(sub_string, substitutions, current_combination, valid_
         if char in substitutions:
             for substitution in substitutions[char]:
                 generate_combinations(rest, substitutions, current_combination + [substitution], valid_combinations)   # recursive function to find the different substring
+        else: 
+            generate_combinations(rest, substitutions, current_combination + [char], valid_combinations) 
 
 def character_positions(input_string):  # function explained where we call it
     char_positions = {}
@@ -21,15 +23,19 @@ def character_positions(input_string):  # function explained where we call it
 
 file = open("tests/test01.swe","r")   # reading file test01.swe for testing
 
-rows = int(file.readline())
+rows = int(file.readline())   # number of testLines
 myString = file.readline()   # our goal string
-dict={}
+dict={} # we will save inside A: ['asd', 'b', 'c'] etc
 testLines = list()   # 'ABD' 'DDE' etc
+result_dict = {} # we will save a map with our testLines as keys and our possible combinations as values
+
+# Herer we get our testLines
 while rows!=0:
     line = file.readline().strip()
     rows-=1
     testLines.append(line)
 
+# Here we populate our dictionary
 for line in file:
     line = line.strip().split(":")
     values = line[1].split(",")
@@ -76,5 +82,10 @@ for secondString in testLines:
     if len(valid_combinations_duplicate_case)==0:   # --> if our string does not contain duplicate letters:
         valid_combinations_duplicate_case = valid_combinations
     
-    print("For the testLine "+ secondString + " the valid combinations are: ")
-    print(valid_combinations_duplicate_case)
+    #print("For the testLine "+ secondString + " the valid combinations are: ")
+    #print(valid_combinations_duplicate_case)
+    
+    result_dict[secondString] = valid_combinations_duplicate_case
+
+# Finally, we check for common sets:
+print(result_dict)

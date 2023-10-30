@@ -1,6 +1,7 @@
 import sys
-import pprint
 
+#########################################################
+# part for checking immediate NO
 def hasNumberIn(stringa):
     numeri = [0,1,2,3,4,5,6,7,8,9]
     for i in range(len(numeri)):
@@ -12,11 +13,9 @@ def hasNumberIn(stringa):
 def checkTestLineNumber(text):
     rows = int(text[0])
     without = 0
-    #print(text)
     for i in range(2,len(text)):
         if ":" not in text[i]:
             without+=1
-    #print(without)
     if without!=rows:
         print("NO")
         exit()
@@ -52,7 +51,6 @@ def checkIntoInto(dict):
 def emptyDict(dict):
     for key in dict:
         if dict[key][0]!='':
-            #print([dict[key]], "questo è diverso da """)
             return False
     return True
 def nested(dict):
@@ -92,9 +90,17 @@ def sEmpty(myString,dict,testLines):
             string = key + ":"
             print(string)
         exit()
-    
+def checkDictInTestline(testLines,dict):
+    for testLine in testLines:
+        for element in testLine:
+            if element.isupper()==True:
+                if element not in dict:
+                    print("NO")
+                    exit()
+#########################################################
 
-
+##########################################################
+#this part of the code read the input and fills the data structures
 def readInput(testLines, dict):
     text = []
     for line in sys.stdin:
@@ -105,32 +111,23 @@ def readInput(testLines, dict):
             break
         else:
             text.append(line.strip())
-    
     myString=text[1]
-    #checkFile(text)
-
     if len(text)==0:
-        print("NO")
+        print("NO")  
         exit()
-
     if text[0].isnumeric()==False:
         print("NO")
         exit()
-    
     rows = int(text[0])
     myString = text[1]
     if rows<0:
         print("NO")
         exit()
     
-    
     checkTestLineNumber(text)
-    # aggiungi altri costrutti if per altra roba
     for i in range(2,2+rows):
         testLines.append(text[i].strip())
-    #ultimo(text,dict)
-    #nested(dict)
-    #fillWithLower(dict,testLines)
+    
     for i in range(2+rows,len(text)):
         if ":" not in text[i]:
             print("NO")
@@ -148,7 +145,6 @@ def readInput(testLines, dict):
             exit()
         dict[key] = values
     
-
     rows = int(text[0])
     myString = text[1]
     nested(dict)
@@ -175,23 +171,11 @@ def readInput(testLines, dict):
     checkNumber(testLines)
     chechNumberDict(dict)
     sEmpty(myString,dict,testLines)
-    #dictLong(dict)
     return rows,myString
-def checkDictInTestline(testLines,dict):
-    for testLine in testLines:
-        for element in testLine:
-            if element.isupper()==True:
-                if element not in dict:
-                    print("NO")
-                    exit()
-
+##########################################################
 
 ##########################################################
-#this part of the code resolves other stuff
-
-
-##########################################################
-#this part of the code finds the solution
+#this part of the code prints the solution YES/NO
 def createDict(testLine,solution):
     dict = {}
     i=0
@@ -199,7 +183,7 @@ def createDict(testLine,solution):
         dict[letter] = solution[i]
         i+=1
     return dict
-def checkFile(text):
+
     for line in text:
         if ":" not in line and ("1" or "2" or "3" or "4" or "5" or "6" or "7" or "8" or "9" or "0") not in line or "," not in line:
             print("NO")
@@ -208,23 +192,16 @@ def giveOutput(dict,testLines,solutions):
     testLine = testLines[0]
     search = solutions[testLine] #here I have the solution
     for solution in search:
-        confronto = createDict(testLine,solution)  #funziona
+        confronto = createDict(testLine,solution) 
         giveOutputRecursive(dict,testLines[1::],solutions,confronto)
     print("NO")
     exit()
-
 def createSolution(dict,confronto):
     for key in dict:
         if key not in confronto:
-            confronto[key]=dict[key][0]
-    
+            confronto[key]=dict[key][0]  
 def giveOutputRecursive(dict,testLines,solutions,confronto):
-    #print(len(testLines))
     if len(testLines)==0:
-        #print("sono quaaaaaa")
-        #devo capire quali sono le chaivi che non ho usato dagli insiemi che ho
-        # devo fare il merge con il dict
-        # le chiavi di dict che non sono in confronto le metti in confronto
         createSolution(dict,confronto)
         chiavi = list(confronto.keys())
         chiavi.sort()
@@ -236,33 +213,22 @@ def giveOutputRecursive(dict,testLines,solutions,confronto):
     else:
         search = solutions[testLines[0]]
         for solution in search:
-            # crea il dizionario
-            # prendi le chaivi e trova le comuni
-            # verifica  che siano uguali
-            # merge tra  i 2 dizionari
-            # scendi sotto con il dizionario allargato
-            # nel backtrack togli le chaivi aggiunte
             check = createDict(testLines[0],solution)
             keys1 = list(confronto.keys())
             keys2 = list(check.keys())
             commons = common_member(keys1,keys2)
-            flag = checkMerge(confronto,check,commons) # lui da problemi 
+            flag = checkMerge(confronto,check,commons) 
             if flag == True:
-                #print("ci sono")
                 merged = confronto | check
-                giveOutputRecursive(dict,testLines[1::],solutions,merged)
-            
+                giveOutputRecursive(dict,testLines[1::],solutions,merged)           
 def checkMerge(dict1,dict2, keys):
     for key in keys:
         if dict1[key]!=dict2[key]:
             return False
     return True
-    
 def common_member(a, b):    
     a_set = set(a)
     b_set = set(b)
-     
-    # check length 
     if len(a_set.intersection(b_set)) > 0:
         return list(a_set.intersection(b_set))  
     else:
@@ -270,13 +236,12 @@ def common_member(a, b):
 ##########################################################
 
 ##########################################################
-# part of the code for the solutions of every testLine
+# part of the code for the solutions of each testLine
 def fillWithLower(dict,testLines):
     for line in testLines:
         for element in line:
             if element.islower():
                 dict[element] = element
-
 def findSolutions(myString, testLine, dict):
     used = {}    #this dict register the value choosen for each set key=setName value=elementOfAlphabet
     result = []
@@ -294,10 +259,8 @@ def findSolutions(myString, testLine, dict):
             findSolutionsRecursive(myString[index + len(element)::], testLine[1::], dict, sol, result ,used)
             del used[testLine[0]] #backTrack
     return result
-
 def find_all(myString, sub):
     if myString=="" and sub=="":
-        #print(myString)
         return [0]
     result = []
     k = 0
@@ -309,8 +272,7 @@ def find_all(myString, sub):
             result.append(k)
             k += 1 #change to k += len(sub) to not search overlapping results
     return result
-
-#this is the function that explore all the possible baraches of the tree
+# this is the function that explores all the possible branches of the tree
 def findSolutionsRecursive(myString , testLine , dict , sol , results , used):
 
     # if testLine is the empty string the recursion is finished
@@ -342,26 +304,17 @@ def findSolutionsRecursive(myString , testLine , dict , sol , results , used):
                     sol.pop(-1)           #backTrack
             return
     return
-
-
-
 ##########################################################
-                
+
+##########################################################                
 def main():
-    
     testLines = []
-    
     dict = {}
     rows,myString=readInput(testLines,dict)
-
-
     solutions = {}
     fillWithLower(dict,testLines)
     for line in testLines:
         solutions[line] = findSolutions(myString,line,dict)
-    
     giveOutput(dict,testLines,solutions)
     
-    
-
 main()

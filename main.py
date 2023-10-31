@@ -1,89 +1,267 @@
 import sys
-def main():
-    print("ciao")
-    file = open("/Users/enricotuda/Documents/GitHub/HardProblem_Project1/tests/test02.swe", "r")  # reading file test01.swe for testing
-    #devo fare con sys.stdin
-    text = sys.stdin.readlines()
-    
-    rows = int(text[0].strip())
-    myString = text[1].strip()
-    text.pop(0)
-    text.pop(0)
 
-
-
-
-    #rows = int(file.readline())  # number of testLines
-    #myString = file.readline()  # our goal string
-    dict = {}  # we will save inside A: ['asd', 'b', 'c'] etc
-    testLines = list()  # 'ABD' 'DDE' etc
-    result_dict = {}  # we will save a map with our testLines as keys and our possible combinations as values
-    print(dict)
-    print(testLines)
-    # Herer we get our testLines
-    while rows != 0:
-        testLines.append(text.pop(0).strip())
-        #line = file.readline().strip()
-        rows -= 1
-        #testLines.append(line)
-
-    # Here we populate our dictionary
-    for line in text:
-        line = line.strip().split(":")
-        values = line[1].split(",")
-        dict[line[0]] = values
-
-    #testLines ha [ABC,BCD,eccccc]
-
-    #this piece of code solve the problem of lowercase letters in the testlines
-    for test in testLines:
-        for character in test:
-            if character.islower()==True:
-                dict[character]=character   # I simply create a set named d: d which contains only itself
-
-
-
-    results = {}
-
-
-    totale={}
-    for sequenza in testLines:
-        totale[sequenza]=findResultsTestline(myString,sequenza,dict)
-
-
-    for key in totale:
-        if len(totale[key])==0:
+#########################################################
+# part for checking immediate NO
+def hasNumberIn(stringa):
+    numeri = [0,1,2,3,4,5,6,7,8,9]
+    for i in range(len(numeri)):
+         numeri[i] = str(numeri[i])
+    for numero in numeri:
+        if numero in stringa:
             print("NO")
-            exit(0)
+            exit()
+def checkTestLineNumber(text):
+    rows = int(text[0])
+    without = 0
+    for i in range(2,len(text)):
+        if ":" not in text[i]:
+            without+=1
+    if without!=rows:
+        print("NO")
+        exit()
+def checkNumber(testLines):
+    numeri = [0,1,2,3,4,5,6,7,8,9]
+    for i in range(len(numeri)):
+         numeri[i] = str(numeri[i])
+    for test in testLines:
+        for numero in numeri:
+            if numero in test:
+                print("NO")
+                exit()
+def chechNumberDict(dict):
+    keys = list(dict.keys())
+    numeri = [0,1,2,3,4,5,6,7,8,9]
+    for i in range(len(numeri)):
+        numeri[i] = str(numeri[i])
+    for key in keys:
+        for numero in numeri:
+            if numero in key:
+                print("NO")
+                exit()
+def checkIntoInto(dict):
+    for key in dict:
+        if len(key)>1:
+            print("NO")
+            exit()
+        lista = dict[key]
+        for elemento in lista:
+            if elemento.isupper():
+                print("NO")
+                exit()
+def emptyDict(dict):
+    for key in dict:
+        if dict[key][0]!='':
+            return False
+    return True
+def nested(dict):
+    for key in dict:
+        if len(key)>1:
+            print("NO")
+            exit()
+        if key.isupper()!=True:
+            print("NO")
+            exit()
+        for elemento in dict[key]:
+            if elemento in dict:
+                print("NO")
+                exit()
+def double(dict):
+    for key in dict:
+        lista = dict[key]
+        copia = set(lista)
+        if len(lista)!=len(copia):
+            print("NO")
+            exit()
+def sEmpty(myString,dict,testLines):
+    flag=True
+    if myString=="":
+        for key in dict:
+            if key.islower()==True:
+                print("NO")
+                exit()
+            if dict[key]!=['']:
+                flag=False
+    else:
+        flag=False
+    if flag==True:
+        keys = list(dict.keys())
+        keys.sort()
+        for key in keys:
+            string = key + ":"
+            print(string)
+        exit()
+def checkDictInTestline(testLines,dict):
+    for testLine in testLines:
+        for element in testLine:
+            if element.isupper()==True:
+                if element not in dict:
+                    print("NO")
+                    exit()
+#########################################################
 
-    findSolution(totale)
+##########################################################
+#this part of the code read the input and fills the data structures
+def readInput(testLines, dict):
+    text = []
+    for line in sys.stdin:
+        if len(text)==0 and line.strip().isnumeric()==False:
+            print("NO")
+            exit()
+        if line == "\n" and text[-1].isnumeric()==False:
+            break
+        else:
+            text.append(line.strip())
+    myString=text[1]
+    if len(text)==0:
+        print("NO")  
+        exit()
+    if text[0].isnumeric()==False:
+        print("NO")
+        exit()
+    rows = int(text[0])
+    myString = text[1]
+    if rows<0:
+        print("NO")
+        exit()
+    
+    checkTestLineNumber(text)
+    for i in range(2,2+rows):
+        testLines.append(text[i].strip())
+    
+    for i in range(2+rows,len(text)):
+        if ":" not in text[i]:
+            print("NO")
+            exit()
+        linea = text[i]
+        linea = linea.strip().split(":")
+        key = linea[0]
+        if key.isupper()==False:
+            print("NO")
+            exit()
+        hasNumberIn(key)
+        values = linea[1].split(",")
+        if key in dict:
+            print("NO")
+            exit()
+        dict[key] = values
+    
+    rows = int(text[0])
+    myString = text[1]
+    nested(dict)
+    fillWithLower(dict,testLines)
+    if rows==0:
+        keys = list(dict.keys())
+        keys.sort()
+        for key in keys:
+            if key.islower()==False:
+                string = key + ":"+dict[key][0]
+                print(string)
+        exit()
+    
+    if myString=="" or myString=="\n" or myString.isalpha()==False:
+        if emptyDict(dict)==True:
+            keys = list(dict.keys())
+            for key in keys:
+                string = key + ":"
+                print(string)
+            exit()
+    double(dict)
+    checkDictInTestline(testLines,dict)
+    checkIntoInto(dict)
+    checkNumber(testLines)
+    chechNumberDict(dict)
+    sEmpty(myString,dict,testLines)
+    return rows,myString
+##########################################################
+
+##########################################################
+#this part of the code prints the solution YES/NO
+def createDict(testLine,solution):
+    dict = {}
+    i=0
+    for letter in testLine:
+        dict[letter] = solution[i]
+        i+=1
+    return dict
+
+    for line in text:
+        if ":" not in line and ("1" or "2" or "3" or "4" or "5" or "6" or "7" or "8" or "9" or "0") not in line or "," not in line:
+            print("NO")
+            exit() 
+def giveOutput(dict,testLines,solutions):
+    testLine = testLines[0]
+    search = solutions[testLine] #here I have the solution
+    for solution in search:
+        confronto = createDict(testLine,solution) 
+        giveOutputRecursive(dict,testLines[1::],solutions,confronto)
     print("NO")
+    exit()
+def createSolution(dict,confronto):
+    for key in dict:
+        if key not in confronto:
+            confronto[key]=dict[key][0]  
+def giveOutputRecursive(dict,testLines,solutions,confronto):
+    if len(testLines)==0:
+        createSolution(dict,confronto)
+        chiavi = list(confronto.keys())
+        chiavi.sort()
+        for chiave in chiavi:
+            if chiave.islower()==False:
+                stringa = chiave + ":" + confronto[chiave]
+                print(stringa)
+        exit()
+    else:
+        search = solutions[testLines[0]]
+        for solution in search:
+            check = createDict(testLines[0],solution)
+            keys1 = list(confronto.keys())
+            keys2 = list(check.keys())
+            commons = common_member(keys1,keys2)
+            flag = checkMerge(confronto,check,commons) 
+            if flag == True:
+                merged = confronto | check
+                giveOutputRecursive(dict,testLines[1::],solutions,merged)           
+def checkMerge(dict1,dict2, keys):
+    for key in keys:
+        if dict1[key]!=dict2[key]:
+            return False
+    return True
+def common_member(a, b):    
+    a_set = set(a)
+    b_set = set(b)
+    if len(a_set.intersection(b_set)) > 0:
+        return list(a_set.intersection(b_set))  
+    else:
+        return []
+##########################################################
 
-
-
-
-
-
-# this function given myString, one testline and the dict with [ nameSet : alphabet]
-# gives as an output a table with all the valid combination of elements for each alphabet
-def findResultsTestline(myString, testLine, dict):
+##########################################################
+# part of the code for the solutions of each testLine
+def fillWithLower(dict,testLines):
+    for line in testLines:
+        for element in line:
+            if element.islower():
+                dict[element] = element
+def findSolutions(myString, testLine, dict):
     used = {}    #this dict register the value choosen for each set key=setName value=elementOfAlphabet
     result = []
     values = dict[testLine[0]]  # A : [a,b,c,d,e,f,dd]
     for element in values:
         # this function gives as an output a list with all the indexes where the element is found
         indexes = find_all(myString, element)
+        
         while len(indexes) != 0:
-            index = indexes.pop(0)    # popping the first element it's possible to know where the substring starts
-            sol = [element]       # start building the solution
+            index = indexes.pop(0)     # popping the first element it's possible to know where the substring starts
+            sol = [element]            # start building the solution
             used[testLine[0]]=element  # save the choice of which element the set has
             # this is a recursive function that gives a substring of myString starting at index + len(element)
             # from testLine remove the first set
-            explore(myString[index + len(element)::], testLine[1::], dict, sol, result ,used)
+            findSolutionsRecursive(myString[index + len(element)::], testLine[1::], dict, sol, result ,used)
             del used[testLine[0]] #backTrack
     return result
-
 def find_all(myString, sub):
+    if myString=="" and sub=="":
+        return [0]
     result = []
     k = 0
     while k < len(myString):
@@ -94,12 +272,13 @@ def find_all(myString, sub):
             result.append(k)
             k += 1 #change to k += len(sub) to not search overlapping results
     return result
+# this is the function that explores all the possible branches of the tree
+def findSolutionsRecursive(myString , testLine , dict , sol , results , used):
 
-#this is the function that explore all the possible baraches of the tree
-def explore(myString , testLine , dict , sol , results , used):
     # if testLine is the empty string the recursion is finished
     if len(testLine)==0:
-        results.append(sol.copy())
+        if sol not in results:
+            results.append(sol.copy())
         return
     else:
         # if the Set is in used it means that it has a value that it has to have
@@ -108,7 +287,7 @@ def explore(myString , testLine , dict , sol , results , used):
             value = myString.find(element) # search if that elment is at the beginning of myString (trimmed)
             if value==0:
                 sol.append(element)
-                explore(myString[len(element)::],testLine[1::],dict,sol ,results,used) #continue the exploration
+                findSolutionsRecursive(myString[len(element)::],testLine[1::],dict,sol ,results,used) #continue the exploration
                 sol.pop(-1)  #bakctrack
                 return
             else:
@@ -120,84 +299,22 @@ def explore(myString , testLine , dict , sol , results , used):
                 if value==0:  #if it's at the beginning
                     sol.append(element)
                     used[testLine[0]]=element # put in used the fact that the set X is using the element 'y'
-                    explore(myString[len(element)::], testLine[1::], dict, sol, results , used)
+                    findSolutionsRecursive(myString[len(element)::], testLine[1::], dict, sol, results , used)
                     del used[testLine[0]] #backTrack
                     sol.pop(-1)           #backTrack
             return
     return
+##########################################################
 
-
-
-# this function search for 1 solution
-def findSolution(dict):
-    used = {}
-    #this checks if the dict is empty
-    if len(dict.keys())==0:
-        print("No")
-        exit(0)
-    keyList = list(dict.keys()) # find the "first" testLine of the dict
-    first = keyList[0]
-    for solution in dict[first]:
-        fillAtBeginnning(first, solution, used) #this function fills used for every solution of the first testLine
-        exploreSolutions(keyList[1::], used, dict) #don't consider the first testLine studied in this function
-        used = {}                               #backTrack
-
-
-def exploreSolutions(testLines , used , dict):
-    # [GDCA, AD, ABC , ADGA...]
-    # used--> {A : a , B:dd...}
-    if len(testLines)==0: # all the testLines are finished so all respect the constrains
-        
-        keys = list(used.keys()) # lista [A;B;C;D]
-        keys.sort()
-        for key in keys:
-            if key.islower()==False:
-                print(key, ":", used[key][0])
-        exit(1) #when one solution is Found exit
-    else:
-        solutions = dict[testLines[0]]
-
-        #try every solution
-        for solution in solutions:
-            #if this function returns True it's possible to continue the exploration because all the constrains are respected
-            ris = fillUsed(testLines[0], solution, used) # add constrins if required and check that the prevoious are respected
-            if ris==True:
-                exploreSolutions(testLines[1::], used, dict) # continue exploration
-                emptyUsed(testLines[0], solution, used)      #backTrack
-
-def fillAtBeginnning(testLine , solution , used ):
-    for i in range(len(solution)):
-        if testLine[i] in used:
-            if used[testLine[i]]!=solution[i][0]:
-                return False
-        else:
-            used[testLine[i]]=[solution[i],1]
-    return True
-
-
-def fillUsed(testLine, solution, used):
-    for i in range(len(solution)):
-        if testLine[i] in used:
-            if solution[i]!=used[testLine[i]][0]:
-                return False                         #to verify that all the constrains are respected
-    for i in range(len(solution)):
-        if testLine[i] in used:
-            used[testLine[i]][1]+=1                  #increment the counter of how many times the set X compares
-        else:
-            used[testLine[i]]=[solution[i],1]        #say that the set X compares 1 time
-    return True
-
-def emptyUsed(testLine,solution, used):
-    for i in range(len(solution)):
-        if used[testLine[i]][1]==1:      #it means that we take out the constrain in set X
-            del used[testLine[i]]
-        else:
-            used[testLine[i]][1]-=1
-
-
-
-
-
-
-
+##########################################################                
+def main():
+    testLines = []
+    dict = {}
+    rows,myString=readInput(testLines,dict)
+    solutions = {}
+    fillWithLower(dict,testLines)
+    for line in testLines:
+        solutions[line] = findSolutions(myString,line,dict)
+    giveOutput(dict,testLines,solutions)
+    
 main()
